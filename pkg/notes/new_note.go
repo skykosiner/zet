@@ -1,0 +1,4 @@
+package notes
+
+func NewNote() {
+}
