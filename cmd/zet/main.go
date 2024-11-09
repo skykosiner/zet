@@ -5,6 +5,7 @@ import (
 	"os"
 
 	"github.com/skykosiner/zet/pkg/config"
+	"github.com/skykosiner/zet/pkg/notes"
 )
 
 func main() {
@@ -30,5 +31,6 @@ func main() {
 	arg := os.Args[1]
 	switch arg {
 	default:
+		notes.NewNote(os.Args[1], c)
 	}
 }
