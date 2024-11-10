@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"log/slog"
 	"os"
 
@@ -11,7 +12,8 @@ import (
 func main() {
 	/*
 		options:
-		- default arg will juts become a new note in _Inbox folder
+		- default arg will juts become a new note in the path a user has chose in the config
+			- --path chose the path to create the new note in
 		- today
 		- yesterday
 		- tommorow
@@ -28,9 +30,12 @@ func main() {
 		os.Exit(1)
 	}
 
+	notePath := flag.String("path", c.NewNotePath, "Path to put the new note in.")
+	flag.Parse()
+
 	arg := os.Args[1]
 	switch arg {
 	default:
-		notes.NewNote(os.Args[1], c)
+		notes.NewNote(os.Args[1], *notePath)
 	}
 }

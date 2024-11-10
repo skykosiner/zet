@@ -6,13 +6,11 @@ import (
 	"os"
 	"os/exec"
 	"strings"
-
-	"github.com/skykosiner/zet/pkg/config"
 )
 
-func NewNote(name string, c config.Config) {
+func NewNote(name string, path string) {
 	name = strings.Replace(name, " ", "-", 0)
-	newNotePath := fmt.Sprintf("%s/%s.md", c.NewNotePath, name)
+	newNotePath := fmt.Sprintf("%s/%s.md", path, name)
 	editor := os.Getenv("EDITOR")
 
 	if _, err := os.Create(newNotePath); err != nil {
