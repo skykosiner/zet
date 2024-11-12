@@ -2,13 +2,24 @@ package notes
 
 import (
 	"fmt"
+	"log/slog"
+	"os"
 	"time"
 
 	"github.com/skykosiner/zet/pkg/config"
 	"github.com/skykosiner/zet/pkg/utils"
 )
 
-var currentDate = time.Now().Format("2006-01-02")
+func insertDailyTemplate(c config.Config) string {
+	currentDate := time.Now().Format(c.DailyNote.DailyNoteDateFormat)
+	path := fmt.Sprintf("%s/%s/%s.md", c.Vault, c.DailyNote.DailyNotes, currentDate)
+
+	if !utils.FileExists(path) {
+		InsertTemplate(fmt.Sprintf("%s/%s/%s.md", c.Vault, c.TemplatesPath, c.DailyNote.Template), path)
+	}
+
+	return path
+}
 
 /*
 - If the note doesn't exist creat it
@@ -18,9 +29,25 @@ var currentDate = time.Now().Format("2006-01-02")
 with a ## so that the user can journal or whatever, or maybe make that optional?
 */
 func TodayNote(c config.Config) {
-	path := fmt.Sprintf("%s/%s/%s.md", c.Vault, c.DailyNotes, currentDate)
+	path := insertDailyTemplate(c)
 	utils.OpenInEditor(path)
 }
 
-func NewEntry() {
+func NewEntry(c config.Config) {
+	path := insertDailyTemplate(c)
+	f, err := os.OpenFile(path, os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0644)
+	if err != nil {
+		slog.Error("Cloudn't open daily note file to append new entry.", "error", err, "path", path)
+		return
+	}
+
+	defer f.Close()
+
+	// TODO: Make the minutes format add in a double 00 for 0-9 minute and not
+	// just do a :3 but instead :03
+	if _, err = f.WriteString(fmt.Sprintf("## %d:%d\n", time.Now().Hour(), time.Now().Minute())); err != nil {
+		panic(err)
+	}
+
+	utils.OpenInEditor(path)
 }

@@ -39,6 +39,8 @@ func main() {
 	switch args[0] {
 	case "today":
 		notes.TodayNote(c)
+	case "new-entry":
+		notes.NewEntry(c)
 	default:
 		notes.NewNote(args[0], notePath)
 	}

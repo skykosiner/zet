@@ -6,10 +6,17 @@ import (
 	"os"
 )
 
+type DailyNote struct {
+	Template            string `json:"template"`
+	DailyNotes          string `json:"daily_notes"`
+	DailyNoteDateFormat string `json:"daily_note_date_format"`
+}
+
 type Config struct {
-	Vault       string `json:"vault"`
-	NewNotePath string `json:"new_note_path"`
-	DailyNotes  string `json:"daily_notes"`
+	Vault         string    `json:"vault"`
+	TemplatesPath string    `json:"templates_path"`
+	NewNotePath   string    `json:"new_note_path"`
+	DailyNote     DailyNote `json:"daily_note"`
 }
 
 func NewConfig() (Config, error) {
