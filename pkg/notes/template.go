@@ -5,7 +5,7 @@ import (
 	"os"
 )
 
-func InsertTemplate(templatePath string, notePath string) {
+func insertTemplate(templatePath string, notePath string) {
 	bytes, err := os.ReadFile(templatePath)
 	if err != nil {
 		slog.Error("Error reading template.", "error", err, "path", templatePath)

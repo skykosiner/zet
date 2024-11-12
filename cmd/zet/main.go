@@ -1,13 +1,13 @@
 package main
 
 import (
-	"flag"
 	"fmt"
 	"log/slog"
 	"os"
 
 	"github.com/skykosiner/zet/pkg/config"
 	"github.com/skykosiner/zet/pkg/notes"
+	"github.com/spf13/cobra"
 )
 
 func main() {
@@ -24,6 +24,9 @@ func main() {
 		- tag
 			- Search by tag
 	*/
+	rootCmd := &cobra.Command{
+		Use: "zet",
+	}
 
 	c, err := config.NewConfig()
 	if err != nil {
@@ -31,23 +34,75 @@ func main() {
 		os.Exit(1)
 	}
 
-	newNoteFolder := flag.String("path", c.NewNotePath, "Path to put the new note in.")
-	flag.Parse()
-	notePath := fmt.Sprintf("%s/%s", c.Vault, *newNoteFolder)
-	args := flag.Args()
+	// Global flag for specifying the path
+	var newNoteFolder string
+	var fzfOptions string
+	rootCmd.PersistentFlags().StringVar(&newNoteFolder, "path", c.NewNotePath, "Path to put the new note in.")
+	rootCmd.PersistentFlags().StringVar(&fzfOptions, "fzf-options", "", "Additional options to pass to fzf.")
 
-	switch args[0] {
-	case "today":
-		notes.TodayNote(c)
-	case "yesterday":
-		notes.YesterdaysNote(c)
-	case "tomorrow":
-		notes.TomorrowsNote(c)
-	case "daily":
-		notes.SelectDaily(c)
-	case "new-entry":
-		notes.NewEntry(c)
-	default:
+	// Subcommand for "today"
+	todayCmd := &cobra.Command{
+		Use:   "today",
+		Short: "Show today's note",
+		Run: func(cmd *cobra.Command, args []string) {
+			notes.TodayNote(c)
+		},
+	}
+
+	// Subcommand for "yesterday"
+	yesterdayCmd := &cobra.Command{
+		Use:   "yesterday",
+		Short: "Show yesterday's note",
+		Run: func(cmd *cobra.Command, args []string) {
+			notes.YesterdaysNote(c)
+		},
+	}
+
+	// Subcommand for "tomorrow"
+	tomorrowCmd := &cobra.Command{
+		Use:   "tomorrow",
+		Short: "Show tomorrow's note",
+		Run: func(cmd *cobra.Command, args []string) {
+			notes.TomorrowsNote(c)
+		},
+	}
+
+	// Subcommand for "daily"
+	dailyCmd := &cobra.Command{
+		Use:   "daily",
+		Short: "Pick a daily note date",
+		Run: func(cmd *cobra.Command, args []string) {
+			notes.SelectDaily(c, fzfOptions)
+		},
+	}
+
+	// Subcommand for "new-entry"
+	newEntryCmd := &cobra.Command{
+		Use:   "new-entry",
+		Short: "Create a new entry",
+		Run: func(cmd *cobra.Command, args []string) {
+			notes.NewEntry(c)
+		},
+	}
+
+	// Default behavior for creating a new note
+	rootCmd.Run = func(cmd *cobra.Command, args []string) {
+		if len(args) < 1 {
+			fmt.Println("Error: missing note name.")
+			os.Exit(1)
+		}
+
+		// Combine the path from config and the user-specified folder
+		notePath := fmt.Sprintf("%s/%s", c.Vault, newNoteFolder)
 		notes.NewNote(args[0], notePath)
+	}
+
+	// Add subcommands to the root command
+	rootCmd.AddCommand(todayCmd, yesterdayCmd, tomorrowCmd, dailyCmd, newEntryCmd)
+
+	// Execute the root command
+	if err := rootCmd.Execute(); err != nil {
+		slog.Error("Command execution failed", "error", err)
+		os.Exit(1)
 	}
 }

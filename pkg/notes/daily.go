@@ -16,7 +16,7 @@ func insertDailyTemplate(c config.Config, date string) string {
 	path := fmt.Sprintf("%s/%s/%s.md", c.Vault, c.DailyNote.DailyNotes, date)
 
 	if !utils.FileExists(path) {
-		InsertTemplate(fmt.Sprintf("%s/%s/%s.md", c.Vault, c.TemplatesPath, c.DailyNote.Template), path)
+		insertTemplate(fmt.Sprintf("%s/%s/%s.md", c.Vault, c.TemplatesPath, c.DailyNote.Template), path)
 	}
 
 	return path
@@ -73,8 +73,8 @@ func NewEntry(c config.Config) {
 	utils.OpenInEditor(path)
 }
 
-func SelectDaily(c config.Config) {
-	command := fmt.Sprintf(`ls "%s/%s" | fzf --preview="%s %s/%s/{}" --preview-window="80%%"`, c.Vault, c.DailyNote.DailyNotes, utils.CatOrBat(), c.Vault, c.DailyNote.DailyNotes)
+func SelectDaily(c config.Config, fzfOptions string) {
+	command := fmt.Sprintf(`ls "%s/%s" | fzf %s`, c.Vault, c.DailyNote.DailyNotes, fzfOptions)
 	cmd := exec.Command("bash", "-c", command)
 
 	output, err := cmd.CombinedOutput()
