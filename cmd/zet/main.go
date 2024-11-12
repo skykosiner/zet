@@ -40,49 +40,46 @@ func main() {
 	rootCmd.PersistentFlags().StringVar(&newNoteFolder, "path", c.NewNotePath, "Path to put the new note in.")
 	rootCmd.PersistentFlags().StringVar(&fzfOptions, "fzf-options", "", "Additional options to pass to fzf.")
 
-	// Subcommand for "today"
-	todayCmd := &cobra.Command{
-		Use:   "today",
-		Short: "Show today's note",
-		Run: func(cmd *cobra.Command, args []string) {
-			notes.TodayNote(c)
+	commands := []cobra.Command{
+		{
+			Use:   "today",
+			Short: "Show today's note",
+			Run: func(cmd *cobra.Command, args []string) {
+				notes.TodayNote(c)
+			},
+		},
+		{
+			Use:   "yesterday",
+			Short: "Show yesterday's note",
+			Run: func(cmd *cobra.Command, args []string) {
+				notes.YesterdaysNote(c)
+			},
+		},
+		{
+			Use:   "tomorrow",
+			Short: "Show tomorrow's note",
+			Run: func(cmd *cobra.Command, args []string) {
+				notes.TomorrowsNote(c)
+			},
+		},
+		{
+			Use:   "daily",
+			Short: "Pick a daily note date",
+			Run: func(cmd *cobra.Command, args []string) {
+				notes.SelectDaily(c, fzfOptions)
+			},
+		},
+		{
+			Use:   "new-entry",
+			Short: "Create a new entry",
+			Run: func(cmd *cobra.Command, args []string) {
+				notes.NewEntry(c)
+			},
 		},
 	}
 
-	// Subcommand for "yesterday"
-	yesterdayCmd := &cobra.Command{
-		Use:   "yesterday",
-		Short: "Show yesterday's note",
-		Run: func(cmd *cobra.Command, args []string) {
-			notes.YesterdaysNote(c)
-		},
-	}
-
-	// Subcommand for "tomorrow"
-	tomorrowCmd := &cobra.Command{
-		Use:   "tomorrow",
-		Short: "Show tomorrow's note",
-		Run: func(cmd *cobra.Command, args []string) {
-			notes.TomorrowsNote(c)
-		},
-	}
-
-	// Subcommand for "daily"
-	dailyCmd := &cobra.Command{
-		Use:   "daily",
-		Short: "Pick a daily note date",
-		Run: func(cmd *cobra.Command, args []string) {
-			notes.SelectDaily(c, fzfOptions)
-		},
-	}
-
-	// Subcommand for "new-entry"
-	newEntryCmd := &cobra.Command{
-		Use:   "new-entry",
-		Short: "Create a new entry",
-		Run: func(cmd *cobra.Command, args []string) {
-			notes.NewEntry(c)
-		},
+	for _, command := range commands {
+		rootCmd.AddCommand(&command)
 	}
 
 	// Default behavior for creating a new note
@@ -92,13 +89,9 @@ func main() {
 			os.Exit(1)
 		}
 
-		// Combine the path from config and the user-specified folder
 		notePath := fmt.Sprintf("%s/%s", c.Vault, newNoteFolder)
 		notes.NewNote(args[0], notePath)
 	}
-
-	// Add subcommands to the root command
-	rootCmd.AddCommand(todayCmd, yesterdayCmd, tomorrowCmd, dailyCmd, newEntryCmd)
 
 	// Execute the root command
 	if err := rootCmd.Execute(); err != nil {
