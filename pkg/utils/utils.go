@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"fmt"
 	"log/slog"
 	"os"
 	"os/exec"
@@ -22,4 +23,15 @@ func OpenInEditor(path string) {
 func FileExists(path string) bool {
 	_, err := os.Stat(path)
 	return err == nil
+}
+
+func CatOrBat() string {
+	_, err := exec.LookPath("bat")
+
+	if err == nil {
+		fmt.Println("test")
+		return "bat --color=always --style=numbers"
+	}
+
+	return "cat"
 }

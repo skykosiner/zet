@@ -43,6 +43,8 @@ func main() {
 		notes.YesterdaysNote(c)
 	case "tomorrow":
 		notes.TomorrowsNote(c)
+	case "daily":
+		notes.SelectDaily(c)
 	case "new-entry":
 		notes.NewEntry(c)
 	default:

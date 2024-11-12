@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"log/slog"
 	"os"
+	"os/exec"
+	"strings"
 	"time"
 
 	"github.com/skykosiner/zet/pkg/config"
@@ -68,5 +70,20 @@ func NewEntry(c config.Config) {
 		panic(err)
 	}
 
+	utils.OpenInEditor(path)
+}
+
+func SelectDaily(c config.Config) {
+	command := fmt.Sprintf(`ls "%s/%s" | fzf --preview="%s %s/%s/{}" --preview-window="80%%"`, c.Vault, c.DailyNote.DailyNotes, utils.CatOrBat(), c.Vault, c.DailyNote.DailyNotes)
+	cmd := exec.Command("bash", "-c", command)
+
+	output, err := cmd.CombinedOutput()
+	if err != nil {
+		fmt.Printf("Error running command: %v\n", err)
+		fmt.Printf("Output: %s\n", string(output))
+		panic(err)
+	}
+
+	path := fmt.Sprintf("%s/%s/%s", c.Vault, c.DailyNote.DailyNotes, strings.TrimSpace(string(output)))
 	utils.OpenInEditor(path)
 }
