@@ -18,3 +18,8 @@ func OpenInEditor(path string) {
 		os.Exit(0)
 	}
 }
+
+func FileExists(path string) bool {
+	_, err := os.Stat(path)
+	return err == nil
+}
