@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"log/slog"
 	"os"
 
@@ -30,12 +31,15 @@ func main() {
 		os.Exit(1)
 	}
 
-	notePath := flag.String("path", c.NewNotePath, "Path to put the new note in.")
+	newNoteFolder := flag.String("path", c.NewNotePath, "Path to put the new note in.")
 	flag.Parse()
+	notePath := fmt.Sprintf("%s/%s", c.Vault, *newNoteFolder)
+	args := flag.Args()
 
-	arg := os.Args[1]
-	switch arg {
+	switch args[0] {
+	case "today":
+		notes.TodayNote(c)
 	default:
-		notes.NewNote(os.Args[1], *notePath)
+		notes.NewNote(args[0], notePath)
 	}
 }

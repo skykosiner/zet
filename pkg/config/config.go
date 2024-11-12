@@ -9,6 +9,7 @@ import (
 type Config struct {
 	Vault       string `json:"vault"`
 	NewNotePath string `json:"new_note_path"`
+	DailyNotes  string `json:"daily_notes"`
 }
 
 func NewConfig() (Config, error) {
