@@ -17,7 +17,7 @@ func main() {
 			- --path chose the path to create the new note in
 		- today
 		- yesterday
-		- tommorow
+		- tomorrow
 		- daily
 			- Pick any daily note date
 		- tags
@@ -39,6 +39,10 @@ func main() {
 	switch args[0] {
 	case "today":
 		notes.TodayNote(c)
+	case "yesterday":
+		notes.YesterdaysNote(c)
+	case "tomorrow":
+		notes.TomorrowsNote(c)
 	case "new-entry":
 		notes.NewEntry(c)
 	default:

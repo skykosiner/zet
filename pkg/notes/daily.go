@@ -10,9 +10,8 @@ import (
 	"github.com/skykosiner/zet/pkg/utils"
 )
 
-func insertDailyTemplate(c config.Config) string {
-	currentDate := time.Now().Format(c.DailyNote.DailyNoteDateFormat)
-	path := fmt.Sprintf("%s/%s/%s.md", c.Vault, c.DailyNote.DailyNotes, currentDate)
+func insertDailyTemplate(c config.Config, date string) string {
+	path := fmt.Sprintf("%s/%s/%s.md", c.Vault, c.DailyNote.DailyNotes, date)
 
 	if !utils.FileExists(path) {
 		InsertTemplate(fmt.Sprintf("%s/%s/%s.md", c.Vault, c.TemplatesPath, c.DailyNote.Template), path)
@@ -29,12 +28,32 @@ func insertDailyTemplate(c config.Config) string {
 with a ## so that the user can journal or whatever, or maybe make that optional?
 */
 func TodayNote(c config.Config) {
-	path := insertDailyTemplate(c)
+	currentDate := time.Now().Format(c.DailyNote.DailyNoteDateFormat)
+	path := insertDailyTemplate(c, currentDate)
+	utils.OpenInEditor(path)
+}
+
+func TomorrowsNote(c config.Config) {
+	tomorrowsDate := time.Now().AddDate(0, 0, +1).Format(c.DailyNote.DailyNoteDateFormat)
+	path := insertDailyTemplate(c, tomorrowsDate)
+	utils.OpenInEditor(path)
+}
+
+func YesterdaysNote(c config.Config) {
+	yesterdaysDate := time.Now().AddDate(0, 0, -1).Format(c.DailyNote.DailyNoteDateFormat)
+	path := fmt.Sprintf("%s/%s/%s.md", c.Vault, c.DailyNote.DailyNotes, yesterdaysDate)
+
+	if !utils.FileExists(path) {
+		slog.Info("You don't have a note from yesterday.", "Date", yesterdaysDate)
+		return
+	}
+
 	utils.OpenInEditor(path)
 }
 
 func NewEntry(c config.Config) {
-	path := insertDailyTemplate(c)
+	currentDate := time.Now().Format(c.DailyNote.DailyNoteDateFormat)
+	path := insertDailyTemplate(c, currentDate)
 	f, err := os.OpenFile(path, os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0644)
 	if err != nil {
 		slog.Error("Cloudn't open daily note file to append new entry.", "error", err, "path", path)
