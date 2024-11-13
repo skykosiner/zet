@@ -25,7 +25,9 @@ func main() {
 			- Search by tag
 	*/
 	rootCmd := &cobra.Command{
-		Use: "zet",
+		Short:   "zet - Terminal Zettelkasten Manager",
+		Use:     "zet",
+		Example: "zet [new note name]",
 	}
 
 	c, err := config.NewConfig()
@@ -37,8 +39,10 @@ func main() {
 	// Global flag for specifying the path
 	var newNoteFolder string
 	var fzfOptions string
+	var folder string
 	rootCmd.PersistentFlags().StringVar(&newNoteFolder, "path", c.NewNotePath, "Path to put the new note in.")
 	rootCmd.PersistentFlags().StringVar(&fzfOptions, "fzf-options", "", "Additional options to pass to fzf.")
+	rootCmd.PersistentFlags().StringVar(&folder, "folder", "", "Which sub folder/folders to search when looking for notes.")
 
 	commands := []cobra.Command{
 		{
@@ -74,6 +78,13 @@ func main() {
 			Short: "Create a new entry",
 			Run: func(cmd *cobra.Command, args []string) {
 				notes.NewEntry(c)
+			},
+		},
+		{
+			Use:   "search",
+			Short: "Search notes",
+			Run: func(cmd *cobra.Command, args []string) {
+				notes.SearchNotes(c, folder)
 			},
 		},
 	}
