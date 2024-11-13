@@ -41,7 +41,7 @@ func main() {
 	var fzfOptions string
 	var folder string
 	rootCmd.PersistentFlags().StringVar(&newNoteFolder, "path", c.NewNotePath, "Path to put the new note in.")
-	rootCmd.PersistentFlags().StringVar(&fzfOptions, "fzf-options", "", "Additional options to pass to fzf.")
+	rootCmd.PersistentFlags().StringVar(&fzfOptions, "fzf-options", "", "Additional options to pass to fzf.\nzet search --fzf-options \"--preview='bat --color=always --style=numbers {}' --preview-window='bottom,90%'\"")
 	rootCmd.PersistentFlags().StringVar(&folder, "folder", "", "Which sub folder/folders to search when looking for notes.")
 
 	commands := []cobra.Command{
@@ -81,8 +81,9 @@ func main() {
 			},
 		},
 		{
-			Use:   "search",
-			Short: "Search notes",
+			Use:     "search",
+			Short:   "Search notes",
+			Example: "zet search\nzet search --folder sub_folder/another_folder",
 			Run: func(cmd *cobra.Command, args []string) {
 				notes.SearchNotes(c, folder, fzfOptions)
 			},
@@ -104,7 +105,8 @@ func main() {
 		notes.NewNote(args[0], notePath)
 	}
 
-	// Execute the root command
+	rootCmd.Example = "zet 'new note name'\nzet 'new note name' --path sub_path_in_vault/path_two"
+
 	if err := rootCmd.Execute(); err != nil {
 		slog.Error("Command execution failed", "error", err)
 		os.Exit(1)
