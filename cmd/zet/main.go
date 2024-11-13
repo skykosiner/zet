@@ -84,7 +84,7 @@ func main() {
 			Use:   "search",
 			Short: "Search notes",
 			Run: func(cmd *cobra.Command, args []string) {
-				notes.SearchNotes(c, folder)
+				notes.SearchNotes(c, folder, fzfOptions)
 			},
 		},
 	}
