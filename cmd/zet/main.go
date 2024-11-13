@@ -20,6 +20,8 @@ func main() {
 		- tomorrow
 		- daily
 			- Pick any daily note date
+		- search
+			- --folder pick a sub path to search
 		- tags
 		- tag
 			- Search by tag

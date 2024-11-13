@@ -1,3 +1,4 @@
 package tags
 
-func
+func getTags() ([]string, error) {
+}
