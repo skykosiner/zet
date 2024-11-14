@@ -7,6 +7,7 @@ import (
 
 	"github.com/skykosiner/zet/pkg/config"
 	"github.com/skykosiner/zet/pkg/notes"
+	"github.com/skykosiner/zet/pkg/tags"
 	"github.com/spf13/cobra"
 )
 
@@ -88,6 +89,13 @@ func main() {
 			Example: "zet search\nzet search --folder sub_folder/another_folder",
 			Run: func(cmd *cobra.Command, args []string) {
 				notes.SearchNotes(c, folder, fzfOptions)
+			},
+		},
+		{
+			Use:   "tags",
+			Short: "Search for tag",
+			Run: func(cmd *cobra.Command, args []string) {
+				tags.Tags(c)
 			},
 		},
 	}

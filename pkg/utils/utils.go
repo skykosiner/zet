@@ -2,9 +2,11 @@ package utils
 
 import (
 	"fmt"
+	"io/fs"
 	"log/slog"
 	"os"
 	"os/exec"
+	"path/filepath"
 )
 
 func OpenInEditor(path string) {
@@ -34,4 +36,21 @@ func CatOrBat() string {
 	}
 
 	return "cat"
+}
+
+func GetFiles(path string) ([]string, error) {
+	var files []string
+	err := filepath.Walk(path, func(path string, info fs.FileInfo, err error) error {
+		if err != nil {
+			return err
+		}
+
+		if !info.IsDir() {
+			files = append(files, path)
+		}
+
+		return nil
+	})
+
+	return files, err
 }
