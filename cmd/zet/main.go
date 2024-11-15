@@ -17,6 +17,7 @@ func main() {
 		- default arg will juts become a new note in the path a user has chose in the config
 			- --path chose the path to create the new note in
 		- today
+		- delete
 		- yesterday
 		- tomorrow
 		- daily
@@ -95,7 +96,14 @@ func main() {
 			Use:   "tags",
 			Short: "Search for tag",
 			Run: func(cmd *cobra.Command, args []string) {
-				tags.Tags(c)
+				tags.Tags(c, fzfOptions)
+			},
+		},
+		{
+			Use:   "delete",
+			Short: "Search for anote in your vault and delete it.",
+			Run: func(cmd *cobra.Command, args []string) {
+				notes.DeleteNote(c, fzfOptions)
 			},
 		},
 	}

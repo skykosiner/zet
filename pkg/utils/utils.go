@@ -2,11 +2,10 @@ package utils
 
 import (
 	"fmt"
-	"io/fs"
 	"log/slog"
 	"os"
 	"os/exec"
-	"path/filepath"
+	"strings"
 )
 
 func OpenInEditor(path string) {
@@ -27,30 +26,16 @@ func FileExists(path string) bool {
 	return err == nil
 }
 
-func CatOrBat() string {
-	_, err := exec.LookPath("bat")
+func SearchFZF(fzfOptions string, data []string) string {
+	command := fmt.Sprintf("echo -e \"%s\" | fzf %s", strings.Join(data, "\\n"), fzfOptions)
+	cmd := exec.Command("bash", "-c", command)
 
-	if err == nil {
-		fmt.Println("test")
-		return "bat --color=always --style=numbers"
+	output, err := cmd.CombinedOutput()
+	if err != nil {
+		fmt.Printf("Error running command: %v\n", err)
+		fmt.Printf("Output: %s\n", string(output))
+		panic(err)
 	}
 
-	return "cat"
-}
-
-func GetFiles(path string) ([]string, error) {
-	var files []string
-	err := filepath.Walk(path, func(path string, info fs.FileInfo, err error) error {
-		if err != nil {
-			return err
-		}
-
-		if !info.IsDir() {
-			files = append(files, path)
-		}
-
-		return nil
-	})
-
-	return files, err
+	return strings.TrimSpace(string(output))
 }

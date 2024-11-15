@@ -2,6 +2,7 @@ package tags
 
 import (
 	"bufio"
+	"fmt"
 	"io/fs"
 	"log/slog"
 	"os"
@@ -11,6 +12,7 @@ import (
 	"strings"
 
 	"github.com/skykosiner/zet/pkg/config"
+	"github.com/skykosiner/zet/pkg/utils"
 )
 
 func exractTags(path string, tagSet map[string]struct{}, tagRegex *regexp.Regexp) {
@@ -39,10 +41,11 @@ func exractTags(path string, tagSet map[string]struct{}, tagRegex *regexp.Regexp
 	}
 }
 
-// TODO: add in yaml stuff
-func Tags(c config.Config) {
+func getTags(c config.Config) []string {
+	var tags []string
 	tagSet := make(map[string]struct{})
-	tagRegex := regexp.MustCompile(`#(\w+[\w-]*)`)
+	// TODO: Get my regex license!
+	tagRegex := regexp.MustCompile(`#(\w\S*)`)
 
 	err := filepath.Walk(c.Vault, func(path string, info fs.FileInfo, err error) error {
 		if err != nil {
@@ -58,13 +61,29 @@ func Tags(c config.Config) {
 
 	if err != nil {
 		slog.Error("Error getting tags.", "error", err)
-		return
+		return tags
 	}
 
-	var tags []string
 	for tag := range tagSet {
 		tags = append(tags, tag)
 	}
 
 	sort.Strings(tags)
+	return tags
+}
+
+// TODO: add in yaml stuff
+func Tags(c config.Config, fzfOptions string) {
+	tags := getTags(c)
+
+	if len(tags) == 0 {
+		slog.Info("Can't fand any tags.")
+		return
+	}
+
+	tag := utils.SearchFZF(fzfOptions, tags)
+	fmt.Println(tag)
+}
+
+func SearchByTag(c config.Config, fzfOptions, tag string) {
 }
