@@ -106,6 +106,19 @@ func main() {
 				notes.DeleteNote(c, fzfOptions)
 			},
 		},
+		{
+			Use:   "new",
+			Short: "Create a new note",
+			Run: func(cmd *cobra.Command, args []string) {
+				if len(args) < 1 {
+					fmt.Println("Error: missing note name.")
+					os.Exit(1)
+				}
+
+				notePath := fmt.Sprintf("%s/%s", c.Vault, newNoteFolder)
+				notes.NewNote(args[0], notePath)
+			},
+		},
 	}
 
 	for _, command := range commands {
@@ -113,15 +126,8 @@ func main() {
 	}
 
 	// Default behavior for creating a new note
-	rootCmd.Run = func(cmd *cobra.Command, args []string) {
-		if len(args) < 1 {
-			fmt.Println("Error: missing note name.")
-			os.Exit(1)
-		}
-
-		notePath := fmt.Sprintf("%s/%s", c.Vault, newNoteFolder)
-		notes.NewNote(args[0], notePath)
-	}
+	// rootCmd.Run = func(cmd *cobra.Command, args []string) {
+	// }
 
 	rootCmd.Example = "zet 'new note name'\nzet 'new note name' --path sub_path_in_vault/path_two"
 
