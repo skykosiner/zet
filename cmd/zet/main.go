@@ -12,26 +12,9 @@ import (
 )
 
 func main() {
-	/*
-		options:
-		- default arg will juts become a new note in the path a user has chose in the config
-			- --path chose the path to create the new note in
-		- today
-		- delete
-		- yesterday
-		- tomorrow
-		- daily
-			- Pick any daily note date
-		- search
-			- --folder pick a sub path to search
-		- tags
-		- tag
-			- Search by tag
-	*/
 	rootCmd := &cobra.Command{
-		Short:   "zet - Terminal Zettelkasten Manager",
-		Use:     "zet",
-		Example: "zet [new note name]",
+		Short: "zet - Terminal Zettelkasten Manager",
+		Use:   "zet",
 	}
 
 	c, err := config.NewConfig()
@@ -107,8 +90,9 @@ func main() {
 			},
 		},
 		{
-			Use:   "new",
-			Short: "Create a new note",
+			Use:     "new",
+			Short:   "Create a new note",
+			Example: "zet new 'hello world'\nzet new 'python is cool' --path path/in/vault/for/new/note",
 			Run: func(cmd *cobra.Command, args []string) {
 				if len(args) < 1 {
 					fmt.Println("Error: missing note name.")
@@ -124,12 +108,6 @@ func main() {
 	for _, command := range commands {
 		rootCmd.AddCommand(&command)
 	}
-
-	// Default behavior for creating a new note
-	// rootCmd.Run = func(cmd *cobra.Command, args []string) {
-	// }
-
-	rootCmd.Example = "zet 'new note name'\nzet 'new note name' --path sub_path_in_vault/path_two"
 
 	if err := rootCmd.Execute(); err != nil {
 		slog.Error("Command execution failed", "error", err)
