@@ -35,5 +35,5 @@ func SearchNotes(c config.Config, folder, fzfOptions string) {
 		slog.Error("Erorr getting files.", "error", err, "path", path)
 		return
 	}
-	utils.OpenInEditor(utils.SearchFZF(fzfOptions, files))
+	utils.OpenInEditor(utils.SearchFZF(fzfOptions, fmt.Sprintf("echo -e \"%s\"", strings.Join(files, "\n"))))
 }

@@ -81,7 +81,7 @@ func Tags(c config.Config, fzfOptions string) {
 		return
 	}
 
-	tag := utils.SearchFZF(fzfOptions, tags)
+	tag := utils.SearchFZF(fzfOptions, fmt.Sprintf("echo -e '%s'", strings.Join(tags, "\n")))
 	fmt.Println(tag)
 }
 

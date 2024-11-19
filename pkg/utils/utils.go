@@ -26,8 +26,8 @@ func FileExists(path string) bool {
 	return err == nil
 }
 
-func SearchFZF(fzfOptions string, data []string) string {
-	command := fmt.Sprintf("echo -e \"%s\" | fzf %s", strings.Join(data, "\\n"), fzfOptions)
+func SearchFZF(fzfOptions string, echoCommand string) string {
+	command := fmt.Sprintf("%s | fzf %s", echoCommand, fzfOptions)
 	cmd := exec.Command("bash", "-c", command)
 
 	output, err := cmd.CombinedOutput()
