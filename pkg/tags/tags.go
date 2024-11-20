@@ -21,7 +21,7 @@ type tag struct {
 }
 
 type yamlData struct {
-	tags []string `yaml:"tags"`
+	Tags []string `yaml:"tags"`
 }
 
 type tags []tag
@@ -75,26 +75,37 @@ func exractTags(path string, tagSet map[string]tag, tagRegex *regexp.Regexp) {
 
 	var yData yamlData
 	var inYaml bool
-	var yamlStr string
-	for idx, line := range lines {
-		if idx == 0 && line == "---" {
+	var yamlLines []string
+
+	// Process lines
+	for _, line := range lines {
+		// Start YAML block
+		if line == "---" {
+			if inYaml {
+				break // End of YAML block
+			}
 			inYaml = true
+			continue
 		}
 
-		if inYaml && line == "---" {
-			inYaml = false
-			return
+		if inYaml {
+			yamlLines = append(yamlLines, line)
 		}
-
-		yamlStr += line
 	}
 
+	yamlStr := strings.Join(yamlLines, "\n")
+
 	if err := yaml.Unmarshal([]byte(yamlStr), &yData); err != nil {
-		slog.Error("Error converting yaml string to yaml.", "error", err, "file path", path)
+		slog.Error("Error converting yaml string to struct.", "error", err)
 		return
 	}
 
-	fmt.Println(yData)
+	for _, t := range yData.Tags {
+		tagSet[t] = tag{
+			tag:  t,
+			path: path,
+		}
+	}
 
 	if err := scanner.Err(); err != nil {
 		slog.Error("Error reading file.", "error", err, "file path", path)
@@ -130,7 +141,6 @@ func getTags(c config.Config, tagRegex *regexp.Regexp) tags {
 	return tags
 }
 
-// TODO: add in yaml stuff
 func Tags(c config.Config, fzfOptions string) {
 	// TODO: Get my regex license!
 	tags := getTags(c, regexp.MustCompile(`#(\w\S*)`))
