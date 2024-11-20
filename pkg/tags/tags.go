@@ -41,11 +41,10 @@ func exractTags(path string, tagSet map[string]struct{}, tagRegex *regexp.Regexp
 	}
 }
 
-func getTags(c config.Config) []string {
+func getTags(c config.Config, tagRegex *regexp.Regexp) []string {
 	var tags []string
 	tagSet := make(map[string]struct{})
 	// TODO: Get my regex license!
-	tagRegex := regexp.MustCompile(`#(\w\S*)`)
 
 	err := filepath.Walk(c.Vault, func(path string, info fs.FileInfo, err error) error {
 		if err != nil {
@@ -74,7 +73,7 @@ func getTags(c config.Config) []string {
 
 // TODO: add in yaml stuff
 func Tags(c config.Config, fzfOptions string) {
-	tags := getTags(c)
+	tags := getTags(c, regexp.MustCompile(`#(\w\S*)`))
 
 	if len(tags) == 0 {
 		slog.Info("Can't fand any tags.")
@@ -86,4 +85,9 @@ func Tags(c config.Config, fzfOptions string) {
 }
 
 func SearchByTag(c config.Config, fzfOptions, tag string) {
+	if len(tag) == 0 {
+		slog.Error("Please provide a tag.")
+		return
+	}
+
 }
