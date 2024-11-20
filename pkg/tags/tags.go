@@ -12,11 +12,16 @@ import (
 
 	"github.com/skykosiner/zet/pkg/config"
 	"github.com/skykosiner/zet/pkg/utils"
+	"gopkg.in/yaml.v3"
 )
 
 type tag struct {
 	tag  string
 	path string
+}
+
+type yamlData struct {
+	tags []string `yaml:"tags"`
 }
 
 type tags []tag
@@ -44,6 +49,7 @@ func (t tags) getTags() []string {
 }
 
 func exractTags(path string, tagSet map[string]tag, tagRegex *regexp.Regexp) {
+	var lines []string
 	file, err := os.Open(path)
 	if err != nil {
 		slog.Error("Error opening file.", "error", err, "file path", path)
@@ -55,6 +61,7 @@ func exractTags(path string, tagSet map[string]tag, tagRegex *regexp.Regexp) {
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
 		line := scanner.Text()
+		lines = append(lines, line)
 		matches := tagRegex.FindAllStringSubmatch(line, -1)
 		for _, match := range matches {
 			if len(match) > 1 {
@@ -65,6 +72,29 @@ func exractTags(path string, tagSet map[string]tag, tagRegex *regexp.Regexp) {
 			}
 		}
 	}
+
+	var yData yamlData
+	var inYaml bool
+	var yamlStr string
+	for idx, line := range lines {
+		if idx == 0 && line == "---" {
+			inYaml = true
+		}
+
+		if inYaml && line == "---" {
+			inYaml = false
+			return
+		}
+
+		yamlStr += line
+	}
+
+	if err := yaml.Unmarshal([]byte(yamlStr), &yData); err != nil {
+		slog.Error("Error converting yaml string to yaml.", "error", err, "file path", path)
+		return
+	}
+
+	fmt.Println(yData)
 
 	if err := scanner.Err(); err != nil {
 		slog.Error("Error reading file.", "error", err, "file path", path)

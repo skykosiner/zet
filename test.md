@@ -1,3 +1,8 @@
+---
+tags:
+    - test
+---
+
 hello world
 
 #hello
