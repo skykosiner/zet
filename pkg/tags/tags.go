@@ -161,5 +161,6 @@ func SearchByTag(c config.Config, fzfOptions, tag string) {
 
 	// TODO: Get my regex license!
 	tags := getTags(c, regexp.MustCompile(fmt.Sprintf(`#(%s\S*)`, tag)))
+	fmt.Println(tags)
 	utils.OpenInEditor(utils.SearchFZF(fzfOptions, fmt.Sprintf("echo -e '%s'", strings.Join(tags.getPaths(), "\n"))))
 }
