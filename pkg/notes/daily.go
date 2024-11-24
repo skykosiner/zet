@@ -22,13 +22,6 @@ func insertDailyTemplate(c config.Config, date string) string {
 	return path
 }
 
-/*
-- If the note doesn't exist creat it
-  - Maybe add an option where the use can generate the note from a template
-
-- If the note does exist maybe add the current time to the bottom of the note
-with a ## so that the user can journal or whatever, or maybe make that optional?
-*/
 func TodayNote(c config.Config) {
 	currentDate := time.Now().Format(c.DailyNote.DailyNoteDateFormat)
 	path := insertDailyTemplate(c, currentDate)

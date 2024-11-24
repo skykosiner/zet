@@ -18,7 +18,7 @@ func getFiles(path string) ([]string, error) {
 			return err
 		}
 
-		if !info.IsDir() && !strings.Contains(path, ".git") && !strings.Contains(path, ".obsidian") {
+		if !info.IsDir() && !strings.Contains(path, ".git") && !strings.Contains(path, ".obsidian") && strings.HasSuffix(info.Name(), ".md") {
 			files = append(files, path)
 		}
 

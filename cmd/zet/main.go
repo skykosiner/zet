@@ -6,6 +6,7 @@ import (
 	"os"
 
 	"github.com/skykosiner/zet/pkg/config"
+	"github.com/skykosiner/zet/pkg/grep"
 	"github.com/skykosiner/zet/pkg/notes"
 	"github.com/skykosiner/zet/pkg/tags"
 	"github.com/spf13/cobra"
@@ -87,6 +88,13 @@ func main() {
 			Short: "Search for anote in your vault and delete it.",
 			Run: func(cmd *cobra.Command, args []string) {
 				notes.DeleteNote(c, fzfOptions)
+			},
+		},
+		{
+			Use:   "grep",
+			Short: "Search notes with regex patterns",
+			Run: func(cmd *cobra.Command, args []string) {
+				grep.Grep(c, args[0])
 			},
 		},
 		{
